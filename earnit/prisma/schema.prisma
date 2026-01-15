@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PARENT
+  CHILD
+}
+
+enum TaskRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum RedemptionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model Family {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members User[]
+  tasks   Task[]
+  rewards Reward[]
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String
+  password      String
+  role          Role
+  credits       Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  familyId String?
+  family   Family? @relation(fields: [familyId], references: [id], onDelete: SetNull)
+
+  // Tasks created by parent
+  createdTasks Task[] @relation("CreatedTasks")
+
+  // Tasks assigned to child
+  assignedTasks Task[] @relation("AssignedTasks")
+
+  // Task completion requests made by child
+  taskRequests TaskRequest[] @relation("ChildRequests")
+
+  // Task requests reviewed by parent
+  reviewedRequests TaskRequest[] @relation("ReviewedRequests")
+
+  // Rewards created by parent
+  createdRewards Reward[]
+
+  // Reward redemptions by child
+  redemptions RewardRedemption[]
+}
+
+model Task {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  credits     Int      // Credit value for completing this task
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User   @relation("CreatedTasks", fields: [createdById], references: [id], onDelete: Cascade)
+
+  assignedToId String?
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+
+  taskRequests TaskRequest[]
+}
+
+model TaskRequest {
+  id        String            @id @default(cuid())
+  status    TaskRequestStatus @default(PENDING)
+  note      String?           // Optional note from child
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  taskId String
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  childId String
+  child   User   @relation("ChildRequests", fields: [childId], references: [id], onDelete: Cascade)
+
+  reviewedById String?
+  reviewedBy   User?    @relation("ReviewedRequests", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt   DateTime?
+}
+
+model Reward {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  cost        Int      // Credits required to redeem
+  quantity    Int?     // Optional: limit on how many can be redeemed
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  familyId String
+  family   Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
+
+  redemptions RewardRedemption[]
+}
+
+model RewardRedemption {
+  id        String           @id @default(cuid())
+  status    RedemptionStatus @default(PENDING)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  rewardId String
+  reward   Reward @relation(fields: [rewardId], references: [id], onDelete: Cascade)
+
+  childId String
+  child   User   @relation(fields: [childId], references: [id], onDelete: Cascade)
+}
