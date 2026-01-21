@@ -17,35 +17,21 @@ export default function Navigation() {
         <Link href="/" className="flex items-center">
           <span className="text-xl font-bold text-zinc-900">Earn It</span>
         </Link>
-
-        <div className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-zinc-600 hover:text-zinc-900"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </div>
-
         <div className="hidden items-center gap-3 md:flex">
           <Link
-            href="/parent/tasks"
+            href="/login"
             className="rounded-full border border-zinc-200 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50"
           >
             Log in
           </Link>
           <Link
-            href="/parent/tasks"
+            href="/login"
             className="rounded-full bg-teal-500 px-4 py-2 text-sm font-medium text-white hover:bg-teal-600"
           >
             Sign up
           </Link>
         </div>
 
-        {/* Mobile menu button */}
         <button
           className="flex h-10 w-10 items-center justify-center rounded-full text-zinc-600 hover:bg-zinc-100 md:hidden"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -55,32 +41,19 @@ export default function Navigation() {
         </button>
       </div>
 
-      {/* Mobile menu */}
       {menuOpen && (
         <div className="mx-auto mt-3 max-w-5xl rounded-3xl border border-zinc-100 bg-white px-4 py-4 shadow-sm md:hidden">
           <div className="flex flex-col gap-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-50"
-                onClick={() => setMenuOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-
             <hr className="my-2 border-zinc-100" />
-
             <Link
-              href="/parent/tasks"
+              href="/login"
               className="rounded-lg px-3 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-50"
               onClick={() => setMenuOpen(false)}
             >
               Log in
             </Link>
             <Link
-              href="/parent/tasks"
+              href="/login"
               className="rounded-full bg-teal-500 px-4 py-2 text-center text-sm font-medium text-white hover:bg-teal-600"
               onClick={() => setMenuOpen(false)}
             >

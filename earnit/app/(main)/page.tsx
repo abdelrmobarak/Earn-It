@@ -96,7 +96,6 @@ const features = [
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero */}
       <section className="px-4 py-10 md:py-14 lg:py-16">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 sm:text-5xl md:text-6xl lg:text-7xl">
